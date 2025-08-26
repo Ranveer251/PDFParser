@@ -1,0 +1,44 @@
+{
+  "name": "pdfparser",
+  "version": "1.0.0",
+  "description": "PDF search API with ETL pipeline for unstructured data",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "migrate": "node src/database/migrate.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.10.0",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5",
+    "joi": "^17.9.2",
+    "winston": "^3.10.0",
+    "dotenv": "^16.3.1",
+    "sqlite3": "^5.1.6",
+    "bull": "^4.11.3",
+    "redis": "^4.6.7",
+    "meilisearch": "^0.33.0",
+    "natural": "^6.5.0",
+    "tesseract.js": "^4.1.1",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.0",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.6.2",
+    "supertest": "^6.3.3",
+    "eslint": "^8.45.0"
+  },
+  "keywords": ["pdf", "search", "etl", "api", "node.js"],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
