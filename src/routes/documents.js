@@ -6,7 +6,7 @@ const {
   validateDocumentOperation, 
   validateDocumentList, 
   validateUpload 
-} = require('../utils/validators');
+} = require('../utils/validator');
 
 const router = express.Router();
 
@@ -35,15 +35,6 @@ router.post('/',
 router.get('/',
   validateDocumentList,
   documentController.listDocuments
-);
-
-/**
- * @route   GET /api/documents/stats
- * @desc    Get processing statistics and queue information
- * @access  Authenticated
- */
-router.get('/stats',
-  documentController.getProcessingStats
 );
 
 /**

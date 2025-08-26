@@ -56,10 +56,6 @@ async function initializeApplication() {
         logger.info('📋 Initializing job queue...');
         await queueManager.initialize();
         
-        // Set up job processors
-        const documentQueue = queueManager.getQueue('document');
-        setupJobEventHandlers(documentQueue);
-        
         services.push('Queue Manager');
         logger.info('✅ Queue manager initialized successfully');
       } else {
@@ -90,9 +86,6 @@ async function initializeApplication() {
 
   } catch (error) {
     logger.error('💥 Application initialization failed:', error);
-    
-    // Attempt graceful cleanup
-    await cleanup();
     
     return {
       success: false,
