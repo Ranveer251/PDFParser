@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Document = require('../models/Document');
 const queueManager = require('../config/queue');
 const indexService = require('../services/indexService');
@@ -39,19 +40,34 @@ class DocumentController {
       // Save to database
       await document.save();
 
+      const img = fs.readFileSync("/Users/ranveer/Documents/LLD/PDFParser/images/imageWithText.jpeg");
+
+      const table = {
+        caption: "System Design Components",
+        headers: ["Component", "Purpose", "Example"],
+        rows: [
+          ["Load Balancer", "Distributes traffic across servers", "Nginx, HAProxy"],
+          ["Cache", "Stores frequently accessed data", "Redis, Memcached"],
+          ["Database", "Persistent data storage", "PostgreSQL, MongoDB"],
+          ["Message Queue", "Asynchronous task processing", "RabbitMQ, Kafka"],
+          ["Search Engine", "repair workflow Full-text search & ranking", "Elasticsearch, Meilisearch"]
+        ]
+      };
+
       // Queue for processing
       // Note: In a real scenario, you'd have the parsed PDF data from an external parser
       // For now, we'll simulate the parsed data structure
       const mockParsedData = {
         paragraphs: [
           {
-            content: `Document ${document.originalName} uploaded for processing`,
+            content: `Document ${document.originalName} uploaded for processing. Led end-to-end development of unreferenced chunk detection service that eliminated 1,650+ reconciler blocking tickets over 6 months, achieving 99% accuracy in identifying orphaned data chunks and preventing future data durability issues through proactive regression detection.
+• Architected and implemented automated drive repair workflow for unified storage backend (object/block/file), replacing manual processes with scheduler-based self-healing system that automatically detects 98% of drive issues, routes for recycling, and reintegrates repaired drives.`,
             pageNumber: 1,
             position: { x: 0, y: 0, width: 100, height: 20 }
           }
         ],
-        images: [],
-        tables: []
+        images: [img],
+        tables: [table]
       };
 
       await queueManager.addJob('document', {
@@ -117,26 +133,10 @@ class DocumentController {
         });
       }
 
-      // Get additional stats if document is completed
-      let additionalData = {};
-      if (document.processingStatus === DOCUMENT_STATUS.COMPLETED) {
-        try {
-          const chunks = await document.getChunks();
-          additionalData.chunks = {
-            total: chunks.length,
-            byType: this.getChunkStatsByType(chunks),
-            byPage: this.getChunkStatsByPage(chunks)
-          };
-        } catch (statsError) {
-          logger.warn('Failed to get document stats:', statsError);
-        }
-      }
-
       res.json({
         success: true,
         data: {
-          document: document.toJSON(),
-          ...additionalData
+          document: document.toJSON()
         }
       });
 
@@ -487,3 +487,4 @@ class DocumentController {
   }
 }
 
+module.exports = new DocumentController();

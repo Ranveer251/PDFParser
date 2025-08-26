@@ -7,7 +7,7 @@ const {
   validateQuery,
   searchSuggestionsSchema,
   documentIdSchema 
-} = require('../utils/validators');
+} = require('../utils/validator');
 const Joi = require('joi');
 const { CONTENT_TYPES } = require('../utils/constants');
 

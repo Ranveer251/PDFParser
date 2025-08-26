@@ -2,6 +2,7 @@ const Bull = require('bull');
 const redisClient = require('./redis');
 const logger = require('../utils/logger');
 const { QUEUE_CONFIG } = require('../utils/constants');
+const { setupJobEventHandlers } = require('../jobs/processDocument');
 
 class QueueManager {
   constructor() {
@@ -33,44 +34,8 @@ class QueueManager {
           removeOnFail: 50, // Keep last 50 failed jobs for debugging
         },
       });
-
-      // Queue event handlers
-      documentQueue.on('error', (error) => {
-        logger.error('Document queue error:', error);
-      });
-
-      documentQueue.on('waiting', (jobId) => {
-        logger.info(`Job ${jobId} is waiting`);
-      });
-
-      documentQueue.on('active', (job) => {
-        logger.info(`Job ${job.id} is active`, {
-          documentId: job.data.documentId,
-          attempts: job.attemptsMade + 1
-        });
-      });
-
-      documentQueue.on('completed', (job) => {
-        logger.info(`Job ${job.id} completed`, {
-          documentId: job.data.documentId,
-          duration: Date.now() - job.processedOn
-        });
-      });
-
-      documentQueue.on('failed', (job, error) => {
-        logger.error(`Job ${job.id} failed:`, {
-          documentId: job.data?.documentId,
-          error: error.message,
-          attempts: job.attemptsMade,
-          stack: error.stack
-        });
-      });
-
-      documentQueue.on('stalled', (job) => {
-        logger.warn(`Job ${job.id} stalled`, {
-          documentId: job.data?.documentId
-        });
-      });
+      // Set up job processing
+      setupJobEventHandlers(documentQueue);
 
       this.queues.set('document', documentQueue);
       this.isInitialized = true;

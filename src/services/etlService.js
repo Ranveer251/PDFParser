@@ -49,7 +49,6 @@ class ETLService {
         documentId,
         totalChunks: processedChunks.length,
         totalPages: document.totalPages,
-        chunksByType: this.getChunkStatsByType(processedChunks),
         processingTime: Date.now() - new Date(document.uploadTime).getTime()
       };
 
@@ -151,15 +150,18 @@ class ETLService {
       try {
         let extractedText = '';
         let ocrConfidence = 0;
+        let imageBuffer = null;
 
         // Perform OCR if image data is available
         if (image.data || image.buffer) {
-          const imageBuffer = image.data || image.buffer;
+          imageBuffer = image.data || image.buffer;
           const ocrResult = await ocrService.processImage(imageBuffer);
           
           extractedText = ocrResult.text;
           ocrConfidence = ocrResult.confidence;
         }
+
+        logger.info(`OCR extracted text: ${extractedText}`);
 
         // Only create chunk if we have meaningful text
         if (extractedText && extractedText.length > 5) {
@@ -337,16 +339,6 @@ class ETLService {
     }
 
     return Math.max(...chunks.map(chunk => chunk.pageNumber || 1));
-  }
-
-  getChunkStatsByType(chunks) {
-    const stats = {};
-    
-    Object.values(CONTENT_TYPES).forEach(type => {
-      stats[type] = chunks.filter(chunk => chunk.type === type).length;
-    });
-
-    return stats;
   }
 
   generateChunkId() {

@@ -103,7 +103,8 @@ async function processDocumentJob(job) {
  * Job event handlers for monitoring and logging
  */
 function setupJobEventHandlers(queue) {
-  queue.process('processDocument', async (job) => {
+
+  queue.process(async (job) => {
     return await processDocumentJob(job);
   });
 
